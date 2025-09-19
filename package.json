@@ -1,0 +1,13 @@
+{
+  "name": "agent-visibility-demo",
+  "private": true,
+  "scripts": {
+    "dev:server": "pnpm --filter server dev",
+    "dev:front": "pnpm --filter frontend dev",
+    "dev": "concurrently \"pnpm dev:server\" \"pnpm dev:front\"",
+    "build": "pnpm --filter server build && pnpm --filter frontend build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
