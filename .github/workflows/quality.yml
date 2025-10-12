@@ -1,0 +1,19 @@
+name: Quality Gate
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  run-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install node-fetch@3
+      - run: node ci/gate.js
+        env:
+          SUPABASE_URL: https://hqgksdneqvhjaukylpoz.supabase.co
+          SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
