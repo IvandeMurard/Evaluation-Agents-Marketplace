@@ -1,29 +1,24 @@
 name: Quality Gate
 
 on:
-  pull_request:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   gate:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
 
-      # (si ton script est en pur Node et n'a pas besoin d'installer des deps, tu peux sauter "npm ci")
-      # - name: Install deps
-      #   run: npm ci
-
-      - name: Run quality gate
-        run: node ci/gate.js
+      - name: Run gate
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+        run: node ci/gate.js
