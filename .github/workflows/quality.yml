@@ -24,6 +24,7 @@ jobs:
       # et échoue si composite < 0.8 ou si issue critique (pii / retry_idem)
       - name: Run quality gate
         env:
-          SUPABASE_URL: ${{ shttps://hqgksdneqvhjaukylpoz.supabase.co }}
-          SUPABASE_SERVICE_ROLE: ${{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhxZ2tzZG5lcXZoamF1a3lscG96Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODU0Njk4NiwiZXhwIjoyMDc0MTIyOTg2fQ.Eiad69fnZwBcT1GF2FfYdE3v3wzcFRUy4ovR71C3A_s }}
+          env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
         run: node ci/gate.js
