@@ -1,41 +1,57 @@
-import fetch from "node-fetch";
+// ci/gate.js
+// Node 18+ (fetch natif)
+
+const { SUPABASE_URL, SUPABASE_SERVICE_ROLE } = process.env;
+
+const headers = {
+  apikey: SUPABASE_SERVICE_ROLE,
+  Authorization: `Bearer ${SUPABASE_SERVICE_ROLE}`,
+  Accept: 'application/json',
+};
+
+const fail = (msg) => {
+  console.error(`❌ Quality gate failed: ${msg}`);
+  process.exit(1);
+};
+const pass = (msg) => {
+  console.log(`✅ Quality gate passed: ${msg}`);
+  process.exit(0);
+};
 
 (async () => {
   try {
-    const SUPABASE_URL = process.env.SUPABASE_URL;
-    const SRK = process.env.SUPABASE_SERVICE_ROLE;
+    // 1) Dernier run
+    const r1 = await fetch(
+      `${SUPABASE_URL}/rest/v1/agent_runs?select=id,metrics&order=created_at.desc&limit=1`,
+      { headers }
+    );
+    const runs = await r1.json();
+    if (!runs.length) fail('No agent_runs found.');
+    const { id: runId, metrics = {} } = runs[0] ?? {};
+    const composite = Number(metrics?.composite ?? 0);
 
-    const params = new URLSearchParams({
-      select: "id,status,finished_at,metrics",
-      status: "eq.succeeded",
-      order: "finished_at.desc",
-      limit: "1",
-    });
+    console.log('Run:', runId);
+    console.log('Composite:', composite);
 
-    const url = `${SUPABASE_URL}/rest/v1/agent_runs?${params}`;
-    const headers = { apikey: SRK, Authorization: `Bearer ${SRK}` };
+    // 2) Issues critiques (PII, Retry/Idempotency)
+    const criticalTags = ['pii', 'retry_idem'];
+    const r2 = await fetch(
+      `${SUPABASE_URL}/rest/v1/run_issues?select=tag,severity&run_id=eq.${runId}`,
+      { headers }
+    );
+    const issues = await r2.json();
 
-    const res = await fetch(url, { headers });
-    if (!res.ok) throw new Error(await res.text());
-    const [row] = await res.json();
+    const hasCritical = issues.some((i) =>
+      criticalTags.includes(String(i.tag || '').toLowerCase())
+    );
 
-    const composite = Number(row?.metrics?.composite ?? 0);
-    console.log("Latest composite:", composite);
+    // 3) Règle de décision
+    if (hasCritical) fail(`critical issue present (${criticalTags.join(', ')})`);
+    if (Number.isNaN(composite)) fail('composite is NaN');
+    if (composite < 0.8) fail(`composite ${composite} < 0.8`);
 
-    if (!Number.isFinite(composite)) {
-      console.log("No valid composite yet — skipping gate.");
-      process.exit(0);
-    }
-
-    if (composite < 0.8) {
-      console.error("❌  Quality gate failed (< 0.8)");
-      process.exit(1);
-    }
-
-    console.log("✅  Quality gate passed (≥ 0.8)");
-    process.exit(0);
-  } catch (err) {
-    console.error("Gate error:", err);
-    process.exit(1);
+    pass(`composite ${composite} ≥ 0.8 and no critical issues.`);
+  } catch (e) {
+    fail(e?.message || String(e));
   }
 })();
