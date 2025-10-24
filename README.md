@@ -25,6 +25,6 @@ flowchart LR
         K[Backups, Retention, RBAC, Audit Logs]
     end
     K --> E
-    classDef secure fill:#eaf8f1,stroke:#2e7d32,stroke-width:2px;
+    classDef secure fill:#eaf8f1,stroke:#2e7d32,stroke-width:2px,color:#000;
     class E,F secure;
 ```
