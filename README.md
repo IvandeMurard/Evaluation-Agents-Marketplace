@@ -10,27 +10,24 @@ This project is respectful of SOC 2 Trust Principles
 
 ## 🧩 SOC 2-Ready Data Flow
 
-## 🧩 SOC 2-Ready Data Flow
-
-This diagram illustrates the secure-by-design data architecture for the AI Evaluation Agent.
-
 ```mermaid
 flowchart LR
-    A[User / Client Team] -->|HTTPS + JWT| B[Frontend (Vercel)]
-    B -->|Webhook / API| C[n8n Orchestrator<br/>(Cron, Webhooks, Secrets Vault)]
-    B -->|RLS (JWT)| D[Supabase Auth]
-    C -->|TLS + service key| E[(Supabase Postgres<br/>agent_runs, issues, metrics)]
-    C -->|Store artifacts| F[(Supabase Buckets)]
-    C -->|Prompts (no PII)| G[LLM Providers<br/>OpenAI / Anthropic]
-    G -->|LLM outputs| C
-    C -->|Run status / errors| H[Logging & Monitoring]
-    H -->|Alert| I[Slack / Ops Channel]
-    J[GitHub Repo<br/>n8n blueprints, schemas] -->|Versions| C
+    A[User / Client Team] --> B[Frontend_Vercel]
+    B --> C[n8n Orchestrator (Cron, Webhooks, Secrets Vault)]
+    B --> D[Supabase Auth]
+    C --> E[(Supabase Postgres: agent_runs, issues, metrics)]
+    C --> F[(Supabase Buckets)]
+    C --> G[LLM Providers (OpenAI-Anthropic)]
+    G --> C
+    C --> H[Logging & Monitoring]
+    H --> I[Slack Ops Channel]
+    J[GitHub Repo (n8n blueprints, schemas)] --> C
 
     subgraph Policies_and_Controls
         K[Backups, Retention, RBAC, Audit Logs]
     end
-    K -->|Enforced controls| E
+    K --> E
 
     classDef secure fill:#eaf8f1,stroke:#2e7d32,stroke-width:2px;
     class E,F secure;
+
