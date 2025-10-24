@@ -8,7 +8,10 @@ A tiny demo that:
 This project is respectful of SOC 2 Trust Principles
 [Security & Trust](./SECURITY.md)
 
-Flowchart LR
+## 🧩 SOC 2-Ready Data Flow
+
+```mermaid
+flowchart LR
     A[User / Client Team] -- HTTPS + JWT --> B[Frontend (Vercel)]
     B -- Webhook / API --> C[n8n Orchestrator\n(Cron, Webhooks, Secrets Vault)]
     B -- RLS (JWT) --> D[Supabase Auth]
@@ -27,4 +30,3 @@ Flowchart LR
 
     classDef secure fill:#eaf8f1,stroke:#2e7d32,stroke-width:2px;
     class E,F secure
-```
