@@ -10,24 +10,20 @@ This project is respectful of SOC 2 Trust Principles
 
 ## 🧩 SOC 2-Ready Data Flow
 
-```mermaid
 flowchart LR
     A[User / Client Team] --> B[Frontend_Vercel]
-    B --> C[n8n Orchestrator (Cron, Webhooks, Secrets Vault)]
+    B --> C["n8n Orchestrator (Cron, Webhooks, Secrets Vault)"]
     B --> D[Supabase Auth]
-    C --> E[(Supabase Postgres: agent_runs, issues, metrics)]
+    C --> E[("Supabase Postgres: agent_runs, issues, metrics")]
     C --> F[(Supabase Buckets)]
-    C --> G[LLM Providers (OpenAI-Anthropic)]
+    C --> G["LLM Providers (OpenAI-Anthropic)"]
     G --> C
     C --> H[Logging & Monitoring]
     H --> I[Slack Ops Channel]
-    J[GitHub Repo (n8n blueprints, schemas)] --> C
-
+    J["GitHub Repo (n8n blueprints, schemas)"] --> C
     subgraph Policies_and_Controls
         K[Backups, Retention, RBAC, Audit Logs]
     end
     K --> E
-
     classDef secure fill:#eaf8f1,stroke:#2e7d32,stroke-width:2px;
     class E,F secure;
-
