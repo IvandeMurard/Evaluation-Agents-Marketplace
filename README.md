@@ -9,7 +9,7 @@ This project is respectful of SOC 2 Trust Principles
 [Security & Trust](./SECURITY.md)
 
 ## 🧩 SOC 2-Ready Data Flow
-
+```mermaid
 flowchart LR
     A[User / Client Team] --> B[Frontend_Vercel]
     B --> C["n8n Orchestrator (Cron, Webhooks, Secrets Vault)"]
@@ -27,3 +27,4 @@ flowchart LR
     K --> E
     classDef secure fill:#eaf8f1,stroke:#2e7d32,stroke-width:2px;
     class E,F secure;
+```
